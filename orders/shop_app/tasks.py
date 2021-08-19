@@ -2,7 +2,7 @@ import yaml
 from django.conf.global_settings import EMAIL_HOST_USER
 from django.core.mail import EmailMultiAlternatives
 
-from my_shop_app.models import Shop, Category, ProductInfo, Product, Parameter, ProductParameter
+from .models import Shop, Category, ProductInfo, Product, Parameter, ProductParameter
 from orders.celery import app
 
 

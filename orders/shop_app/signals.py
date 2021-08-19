@@ -1,7 +1,7 @@
 from django.dispatch import receiver, Signal
 from django_rest_passwordreset.signals import reset_password_token_created
-from clients.models import User, ConfirmEmailToken
-from my_shop_app.tasks import send_mail
+from .models import User, ConfirmEmailToken
+from shop_app.tasks import send_mail
 
 new_user_registered = Signal(
     providing_args=['user_id']

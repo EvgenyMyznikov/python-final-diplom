@@ -7,9 +7,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db.models import Q, Sum, F
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import ListAPIView
 from ujson import loads as load_json
-from clients.models import ConfirmEmailToken
+from .models import ConfirmEmailToken
 from .models import Shop, Contact, Category, ProductInfo, Order, OrderItem
 from .serializers import ContactSerializer, OrderSerializer, ShopSerializer, CategorySerializer, \
     ProductInfoSerializer, OrderItemSerializer, UserSerializer
@@ -37,9 +37,6 @@ class RegisterAccount(APIView):
                     error_array.append(elem)
                 return JsonResponse({'Status': False, 'Errors': {'password': error_array}})
             else:
-                # check the data for the uniqueness of the username
-                request.data._mutable = True
-                request.data.update = ({})
                 user_serializer = UserSerializer(data=request.data)
                 if user_serializer.is_valid():
                     # save user
@@ -135,7 +132,7 @@ class LoginAccount(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Not all required arguments are specified'})
 
 
-class CategoryListView(ModelViewSet):
+class CategoryListView(ListAPIView):
     """
     Class for viewing a list of categories
     """
@@ -145,17 +142,16 @@ class CategoryListView(ModelViewSet):
     ordering = ('name',)
 
 
-class ShopListView(ModelViewSet):
+class ShopListView(ListAPIView):
     """
     Class for viewing the list of stores
     """
 
     queryset = Shop.objects.filter(state=True)
     serializer_class = ShopSerializer
-    ordering = ('name',)
 
 
-class ProductInfoView(ModelViewSet):
+class ProductInfoView(APIView):
     """
     Product search class
     """
