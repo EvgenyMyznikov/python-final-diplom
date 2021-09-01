@@ -1,11 +1,7 @@
-from django.db import models
-from django.contrib.auth.models import User
-import binascii
-import os
-from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from backend.managers import CustomUserManager
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
 
@@ -24,49 +20,13 @@ USER_TYPE_CHOICES = (
     ('buyer', 'Покупатель'),
 )
 
-class UserManager(BaseUserManager):
-    """
-    Mixin for user management
-    """
-    use_in_migrations = True
-
-    def _create_user(self, email, password, **extra_fields):
-        """
-        Create and save a user with a given username, email address and password.
-        """
-        if not email:
-            raise ValueError('email must be set')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_user(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', False)
-        extra_fields.setdefault('is_superuser', False)
-        return self._create_user(email, password, **extra_fields)
-
-    def create_superuser(self, email, password, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-        return self._create_user(email, password, **extra_fields)
-
-
 class User(AbstractUser):
-    """
-    Standard user model
-    """
-    REQUIRED_FIELDS = []
-    objects = UserManager()
+
     USERNAME_FIELD = 'email'
-    email = models.EmailField(_('email address'), unique=True)
-    company = models.CharField(verbose_name="Компания", max_length=50, blank=True)
-    position = models.CharField(verbose_name="Должность", max_length=50, blank=True)
+    REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
+
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
         _('username'),
@@ -77,15 +37,11 @@ class User(AbstractUser):
             'unique': _("A user with that username already exists."),
         },
     )
-    is_active = models.BooleanField(
-        _('active'),
-        default=True,
-        help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
-        ),
-    )
-    type = models.CharField(verbose_name="Тип пользователя", choices=USER_TYPE_CHOICES, max_length=5, default='buyer')
+    email = models.EmailField(_('email address'), unique=True)
+    company = models.CharField(verbose_name="Компания", max_length=50, blank=True)
+    position = models.CharField(verbose_name="Должность", max_length=50, blank=True)
+    is_active = models.BooleanField(default=True)
+    user_type = models.CharField(verbose_name="Тип пользователя", choices=USER_TYPE_CHOICES, max_length=5, default='buyer')
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -93,7 +49,7 @@ class User(AbstractUser):
         ordering = ('email',)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.first_name} {self.last_name} {self.email}'
 
 
 class Contact(models.Model):
@@ -116,36 +72,6 @@ class Contact(models.Model):
     def __str__(self):
         return f'{self.city} {self.street} {self.house}'
 
-
-class ConfirmEmailToken(models.Model):
-    user = models.ForeignKey(User,
-                             related_name="confirm_email_tokens",
-                             verbose_name="Пользователь, связанный с этим токеном сброса пароля",
-                             on_delete=models.CASCADE)
-    created_at = models.DateTimeField(verbose_name=_("Когда был создан этот токен"), auto_now_add=True)
-
-    # Ключевое поле, хотя оно не является первичным ключом модели.
-    key = models.CharField(_("Key"), max_length=40, db_index=True, unique=True)
-
-    def save(self, *args, **kwargs):
-        if not self.key:
-            self.key = self.generate_key()
-        return super(ConfirmEmailToken, self).save(*args, **kwargs)
-
-    @staticmethod
-    def generate_key():
-        """
-        Generates pseudo-random code using os.urandom and binascii.hexlify
-        """
-        return binascii.hexlify(os.urandom(20)).decode()
-
-    class Meta:
-        verbose_name = 'Токен подтверждения Email'
-        verbose_name_plural = 'Токены подтверждения Email'
-
-    def __str__(self):
-        return f'Password reset token for user {self.user}'
-        
 
 class Shop(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название")
@@ -275,5 +201,4 @@ class OrderItem(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['order_id', 'product_info'], name='unique_order_item'),
         ]
-
 

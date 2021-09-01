@@ -1,5 +1,6 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Contact, User, Shop, Category, Product, ProductParameter, ProductInfo, Order, OrderItem
+from .models import Contact, Shop, Category, Product, ProductParameter, ProductInfo, Order, OrderItem
 
 
 class ContactSerializer(serializers.ModelSerializer):
@@ -16,8 +17,8 @@ class UserSerializer(serializers.ModelSerializer):
     contacts = ContactSerializer(read_only=True, many=True)
 
     class Meta:
-        model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'company', 'position', 'is_active', 'type', 'contacts')
+        model = get_user_model()
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'company', 'position', 'is_active', 'user_type', 'contacts')
         read_only_fields = ('id',)
 
 

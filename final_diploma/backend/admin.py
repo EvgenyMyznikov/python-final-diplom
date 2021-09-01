@@ -1,25 +1,32 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Contact, ConfirmEmailToken, Shop, Category, Product, ProductInfo, \
-    Parameter, ProductParameter, Order, OrderItem
+from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .models import User, Contact, Category, Shop, Parameter, Product, ProductInfo,\
+    ProductParameter, Order, OrderItem
 
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    """
-    User dashboard
-    """
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
     model = User
+    list_display = ('email', 'first_name', 'last_name', 'is_staff')
+    list_filter = ('email', 'is_staff', 'is_active',)
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'type')}),
+        (None, {'fields': ('email', 'password', 'user_type')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'company', 'position')}),
-        ('Permissions', {
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'user_permissions'),
-        }),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
-        ('Groups', {'fields': ('groups',)}),
     )
-    list_display = ('email', 'first_name', 'last_name', 'is_staff',)
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2', 'is_staff', 'is_active')}
+        ),
+    )
+    search_fields = ('email',)
+    ordering = ('email',)
+
 
 
 @admin.register(Contact)
@@ -27,18 +34,13 @@ class ContactAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(ConfirmEmailToken)
-class ConfirmEmailTokenAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created_at', 'key',)
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
     pass
 
 
@@ -70,3 +72,6 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     pass
+
+
+
