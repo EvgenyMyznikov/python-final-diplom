@@ -138,6 +138,20 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = 'backend.User'
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
+LOGIN_REDIRECT_URL = 'accounts/'
+LOGOUT_REDIRECT_URL = 'accounts/'
+PASSWORD_RESET_REDIRECT_URL = 'accounts/password/change/'
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = env('FROM_EMAIL')
 EMAIL_HOST = env('EMAIL_HOST')
