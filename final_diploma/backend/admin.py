@@ -1,11 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import User, Contact, Category, Shop, Parameter, Product, ProductInfo,\
-    ProductParameter, Order, OrderItem
+from .models import User, Contact
 
 
-@admin.register(User)
+
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
@@ -28,50 +27,54 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email',)
 
 
-
-@admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'city', 'street', 'house', 'structure', 'building', 'apartment', 'user', 'phone')
+    llist_display_links = ('user',)
+    list_filter = ('user', 'city',)
 
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    pass
+admin.site.register(User, CustomUserAdmin)
+admin.site.register(Contact, ContactAdmin)
 
 
-@admin.register(Shop)
-class ShopAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Category)
+# class CategoryAdmin(admin.ModelAdmin):
+#     pass
 
 
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Shop)
+# class ShopAdmin(admin.ModelAdmin):
+#     pass
 
 
-@admin.register(ProductInfo)
-class ProductInfoAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Product)
+# class ProductAdmin(admin.ModelAdmin):
+#     pass
 
 
-@admin.register(Parameter)
-class ParameterAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(ProductInfo)
+# class ProductInfoAdmin(admin.ModelAdmin):
+#     pass
 
 
-@admin.register(ProductParameter)
-class ProductParameterAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Parameter)
+# class ParameterAdmin(admin.ModelAdmin):
+#     pass
 
 
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(ProductParameter)
+# class ProductParameterAdmin(admin.ModelAdmin):
+#     pass
 
 
-@admin.register(OrderItem)
-class OrderItemAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Order)
+# class OrderAdmin(admin.ModelAdmin):
+#     pass
+
+
+# @admin.register(OrderItem)
+# class OrderItemAdmin(admin.ModelAdmin):
+#     pass
 
 
 

@@ -15,6 +15,7 @@ pyyaml = "*"
 requests = "*"
 pytest = "*"
 pytest-django = "*"
+model-bakery = "*"
 
 [dev-packages]
 

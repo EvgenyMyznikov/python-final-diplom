@@ -76,7 +76,6 @@ class Contact(models.Model):
 class Shop(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название")
     url = models.URLField(verbose_name="Ссылка", null=True, blank=True)
-    filename = models.FileField(upload_to="data/%Y/%m/%d", max_length=100)
     user = models.OneToOneField(User, verbose_name="Пользователь", null=True, blank=True, on_delete=models.CASCADE)
     state = models.BooleanField(verbose_name="Статус получения заказов", default=True)
 

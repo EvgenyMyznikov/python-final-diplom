@@ -148,9 +148,10 @@ AUTHENTICATION_BACKENDS = [
 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
-LOGIN_REDIRECT_URL = 'accounts/'
-LOGOUT_REDIRECT_URL = 'accounts/'
-PASSWORD_RESET_REDIRECT_URL = 'accounts/password/change/'
+LOGIN_REDIRECT_URL = '/api/v1/'
+ACCOUNT_SIGNUP_REDIRECT_URL = 'settings.LOGIN_REDIRECT_URL'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
+PASSWORD_RESET_REDIRECT_URL = '/accounts/password/change/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = env('FROM_EMAIL')
@@ -169,7 +170,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
