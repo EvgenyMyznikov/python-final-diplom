@@ -22,7 +22,7 @@ def new_order_signal(user_id, **kwargs):
         # message:
         "Заказ сформирован",
         # from:
-        settings.EMAIL_HOST_USER,
+        settings.DEFAULT_FROM_EMAIL,
         # to:
         [user.email]
     )

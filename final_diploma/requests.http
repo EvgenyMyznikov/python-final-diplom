@@ -1,6 +1,7 @@
 # http file with sample requests
-# admin: Token 141da7beb2b023f9a4102fed942fb82f43e5eec7 
-# user: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
+# admin: Token 16b5358d9a1195d26a41c8785a34da4431151a2a 
+# user2: Token 414fa866d1d73be54c5ce20495b6e3bd251d7c1a
+# user3: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
 
 
 ### user registration
@@ -120,35 +121,116 @@ Content-Type: application/json
 
 
 ### search for goods
-GET http://localhost:8000/api/v1/products/?shop_id=2&category_id=224
+GET http://localhost:8000/api/v1/products/?shop_id=6&category_id=224
 Content-Type: application/json
 
+# HTTP/1.1 200 OK
 
-### Products list
+
+### products list
 GET http://localhost:8000/api/v1/products/
 Content-Type: application/json
 
 # HTTP/1.1 200 OK
-# []
 
-### Receiving a basket
+
+### add items to basket
+POST http://localhost:8000/api/v1/basket/
+Content-Type: application/json
+Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
+
+{"items": [
+	{
+		"product_info":  1,
+		"quantity": 1
+		
+	},
+	{
+		"product_info":  3,
+		"quantity": 1
+		
+	}
+]}
+
+# HTTP/1.1 200 OK
+# {
+#   "Status": true,
+#   "Objects created": 2
+# }
+
+
+### edit the number of items in the cart
+PUT http://localhost:8000/api/v1/basket/
+Content-Type: application/json
+Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
+
+{   
+    "items":[
+        {   
+            "id": 2,
+            "quantity": 3
+        }
+    ]
+}
+
+# HTTP/1.1 200 OK
+# {
+#   "Status": true,
+#   "Updated objects": 1
+# }
+
+
+### remove from basket 
+DELETE http://localhost:8000/api/v1/basket/
+Content-Type: application/json
+Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
+
+{
+    "items": "2"
+}
+
+# HTTP/1.1 200 OK
+# {
+#   "Status": true,
+#   "Deleted objects": 1
+# }
+
+
+### get the contents of the basket
 GET http://localhost:8000/api/v1/basket/
 Content-Type: application/json
 Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
 
 # HTTP/1.1 200 OK
-# []
 
-### Receiving a orders
-GET   http://localhost:8000/api/v1/order/
+
+### get my orders
+GET http://localhost:8000/api/v1/order/
 Content-Type: application/json
 Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
 
 # HTTP/1.1 200 OK
 
+
+### place an order
+POST http://localhost:8000/api/v1/order/
+Content-Type: application/json
+Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
+
+{   
+    "id": "1",
+    "contact": "2"
+}
+
+# HTTP/1.1 200 OK
+# {
+#   "Status": true
+# }
+
+
 ### update partner price list
 POST http://localhost:8000/api/v1/partner/update/
-Content-Type: application/x-www-form-urlencoded
+Content-Type: application/json
 Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
 
 {   
@@ -156,11 +238,39 @@ Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
 }
 
 # HTTP/1.1 200 OK
+# {
+#   "Status": true
+# }
 
 
-### Get partner status
+### get partner status
 GET   http://localhost:8000/api/v1/partner/state/
 Content-Type: application/json
 Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
 
 # HTTP/1.1 200 OK
+
+
+### receiving store orders
+GET http://localhost:8000/api/v1/partner/orders/
+Content-Type: application/json
+Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
+
+# HTTP/1.1 200 OK
+
+
+### Partner status updates
+PATCH  http://localhost:8000/api/v1/partner/state/6/
+Content-Type: application/json
+Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
+
+{  
+    "state": "true"
+}
+
+# HTTP/1.1 200 OK
+# {
+#   "id": 6,
+#   "name": "Связной",
+#   "state": true
+# }

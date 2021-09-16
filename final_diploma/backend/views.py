@@ -11,7 +11,6 @@ from rest_framework.views import APIView
 from django.db.models import Q, Sum, F
 from rest_framework import viewsets
 from .permissions import IsAuthorOrReadOnly
-from ujson import loads as load_json
 from yaml import load as load_yaml, Loader
 from .models import Parameter, Product, ProductParameter, Shop, Contact, Category, ProductInfo, Order, OrderItem
 from .serializers import ContactSerializer, OrderSerializer, ShopSerializer, CategorySerializer, \
@@ -110,7 +109,7 @@ class BasketView(APIView):
         items_string = request.data.get('items')
         if items_string:
             try:
-                items_dict = load_json(items_string)
+                items_dict = items_string
             except ValueError:
                 JsonResponse(
                     {'Status': False, 'Errors': 'Invalid request format'})
@@ -152,7 +151,7 @@ class BasketView(APIView):
                     query = query | Q(order_id=basket.id, id=order_item_id)
                     objects_deleted = True
             if objects_deleted:
-                removal_counter = Contact.objects.filter(query).delete()[0]
+                removal_counter = OrderItem.objects.filter(query).delete()[0]
                 return JsonResponse({'Status': True, 'Deleted objects': removal_counter})
         return JsonResponse({'Status': False, 'Error': 'Not all required arguments are specified'})
 
@@ -161,16 +160,15 @@ class BasketView(APIView):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
 
-        items_sting = request.data.get('items')
-        if items_sting:
+        items_string = request.data.get('items')
+        if items_string:
             try:
-                items_dict = load_json(items_sting)
+                items_dict = items_string
             except ValueError:
                 JsonResponse(
                     {'Status': False, 'Errors': 'Invalid request format'})
             else:
-                basket, _ = Order.objects.get_or_create(
-                    user_id=request.user.id, state='basket')
+                basket, _ = Order.objects.get_or_create(user_id=request.user.id, state='basket')
                 objects_updated = 0
                 for order_item in items_dict:
                     if type(order_item['id']) == int and type(order_item['quantity']) == int:
@@ -395,7 +393,7 @@ class OrderView(APIView):
                     return JsonResponse({'Status': False, 'Errors': 'Arguments are incorrect'})
                 else:
                     if is_updated:
-                        new_order.send(sender=self.__class__,
-                                       user_id=request.user.id)
+                        new_order.send(sender=self.__class__, user_id=request.user.id)
                         return JsonResponse({'Status': True})
+                        
         return JsonResponse({'Status': False, 'Error': 'Not all required arguments are specified'})
