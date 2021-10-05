@@ -1,11 +1,33 @@
+import csv
+import datetime
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import User, Contact
+from .models import Order, OrderItem, User, Contact
 
+
+def export_to_csv(modeladmin, request, queryset):
+    opts = modeladmin.model._meta
+    filename = f'{opts.verbose_name}.csv'
+    f = open(filename, 'w')
+    writer = csv.writer(f)
+    fields = [field for field in opts.get_fields() if not field.many_to_many and not field.one_to_many]
+    writer.writerow([field.verbose_name for field in fields])
+    for obj in queryset:
+        data_row = []
+        for field in fields:
+            value = getattr(obj, field.name)
+            if isinstance(value, datetime.datetime):
+                value = value.strftime('%d/%m/%Y')
+            data_row.append(value)
+        writer.writerow(data_row)
+export_to_csv.short_description = 'Export to CSV'
 
 
 class CustomUserAdmin(UserAdmin):
+    """
+    Users control panel
+    """
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = User
@@ -37,44 +59,20 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Contact, ContactAdmin)
 
 
-# @admin.register(Category)
-# class CategoryAdmin(admin.ModelAdmin):
-#     pass
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    raw_id_fields = ['order']
+    
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'date', 'state', 'contact']
+    list_filter = ['user', 'date']
+    inlines = [OrderItemInline]
+    actions = [export_to_csv]
 
 
-# @admin.register(Shop)
-# class ShopAdmin(admin.ModelAdmin):
-#     pass
 
 
-# @admin.register(Product)
-# class ProductAdmin(admin.ModelAdmin):
-#     pass
-
-
-# @admin.register(ProductInfo)
-# class ProductInfoAdmin(admin.ModelAdmin):
-#     pass
-
-
-# @admin.register(Parameter)
-# class ParameterAdmin(admin.ModelAdmin):
-#     pass
-
-
-# @admin.register(ProductParameter)
-# class ProductParameterAdmin(admin.ModelAdmin):
-#     pass
-
-
-# @admin.register(Order)
-# class OrderAdmin(admin.ModelAdmin):
-#     pass
-
-
-# @admin.register(OrderItem)
-# class OrderItemAdmin(admin.ModelAdmin):
-#     pass
 
 
 

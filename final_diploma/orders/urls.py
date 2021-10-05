@@ -15,15 +15,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.documentation import include_docs_urls
+from backend.views import Home
 from allauth.account.views import ConfirmEmailView, PasswordResetView
+from rest_framework.schemas import get_schema_view
 
+
+API_TITLE = 'API Service'
+API_DESCRIPTION = 'API Service for ordering goods for retail chains.'
+schema_view = get_schema_view(title=API_TITLE)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', Home.as_view(), name='home'),
     path('api/v1/', include('backend.urls')),
     path('rest-auth/', include('rest_auth.urls')),
     path('rest-auth/registration/', include('rest_auth.registration.urls')),
     path('accounts/', include('allauth.urls')),
     path('accounts/password/reset/', PasswordResetView.as_view(), name='account_reset_password'),
     path('accounts/ confirm-email/', ConfirmEmailView.as_view(), name='account_email_verification_sent'),
+    path('docs/', include_docs_urls(title=API_TITLE, description=API_DESCRIPTION)),
+    path('schema/', schema_view),
 ]

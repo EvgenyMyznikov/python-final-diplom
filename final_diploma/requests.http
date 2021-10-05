@@ -137,7 +137,7 @@ Content-Type: application/json
 ### add items to basket
 POST http://localhost:8000/api/v1/basket/
 Content-Type: application/json
-Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
+Authorization: Token 414fa866d1d73be54c5ce20495b6e3bd251d7c1a
 
 {"items": [
 	{
@@ -215,10 +215,10 @@ Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
 ### place an order
 POST http://localhost:8000/api/v1/order/
 Content-Type: application/json
-Authorization: Token 2d41b8b3b897bd422882b07902b7d52c05a2a05d
+Authorization: Token 414fa866d1d73be54c5ce20495b6e3bd251d7c1a
 
 {   
-    "id": "1",
+    "id": "2",
     "contact": "2"
 }
 

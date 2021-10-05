@@ -21,6 +21,9 @@ USER_TYPE_CHOICES = (
 )
 
 class User(AbstractUser):
+    """
+    Standard user model
+    """
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -53,6 +56,9 @@ class User(AbstractUser):
 
 
 class Contact(models.Model):
+    """
+    user's contact model
+    """
     user = models.ForeignKey(User, verbose_name='Пользователь',
                              related_name='contacts', blank=True,
                              on_delete=models.CASCADE)
@@ -74,6 +80,9 @@ class Contact(models.Model):
 
 
 class Shop(models.Model):
+    """
+    shop`s model
+    """
     name = models.CharField(max_length=100, verbose_name="Название")
     url = models.URLField(verbose_name="Ссылка", null=True, blank=True)
     user = models.OneToOneField(User, verbose_name="Пользователь", null=True, blank=True, on_delete=models.CASCADE)
@@ -89,6 +98,9 @@ class Shop(models.Model):
 
 
 class Category(models.Model):
+    """
+    category`s model
+    """
     name = models.CharField(max_length=50, verbose_name="Название категории")
     shops = models.ManyToManyField(Shop, verbose_name="Магазины", related_name="categories", blank=True)
 
@@ -102,6 +114,9 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    """
+    product`s model
+    """
     name = models.CharField(max_length=100, verbose_name="Название продукта")
     category = models.ForeignKey(Category, verbose_name="Категория",
                                  related_name="products", blank=True, on_delete=models.CASCADE)
@@ -116,6 +131,9 @@ class Product(models.Model):
 
 
 class ProductInfo(models.Model):
+    """
+    product information model
+    """
     model = models.CharField(max_length=100, verbose_name="Модель", blank=True)
     external_id = models.PositiveIntegerField(verbose_name="Внешний ID")
     product = models.ForeignKey(Product, verbose_name="Продукт", related_name="product_infos", blank=True,
@@ -138,6 +156,9 @@ class ProductInfo(models.Model):
 
 
 class Parameter(models.Model):
+    """
+    model for parameter
+    """
     name = models.CharField(max_length=50, verbose_name="Название")
 
     class Meta:
@@ -150,6 +171,9 @@ class Parameter(models.Model):
 
 
 class ProductParameter(models.Model):
+    """
+    model for product parameter
+    """
     product_info = models.ForeignKey(ProductInfo, verbose_name="Информация о продукте",
                                      related_name="product_parameters", blank=True,
                                      on_delete=models.CASCADE)
@@ -170,6 +194,9 @@ class ProductParameter(models.Model):
 
 
 class Order(models.Model):
+    """
+    order`s model
+    """
     user = models.ForeignKey(User, verbose_name="Пользователь",
                              related_name="orders", blank=True,
                              on_delete=models.CASCADE)
@@ -187,6 +214,9 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+    """
+    model of ordered items
+    """
     order = models.ForeignKey(Order, verbose_name="Заказ", related_name="ordered_items", blank=True,
                               on_delete=models.CASCADE)
     product_info = models.ForeignKey(ProductInfo, verbose_name="Информация о продукте",

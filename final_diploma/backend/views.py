@@ -3,6 +3,7 @@ from distutils.util import strtobool
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
+from django.views.generic import TemplateView
 from django.http import JsonResponse
 from requests import get
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
@@ -15,9 +16,13 @@ from yaml import load as load_yaml, Loader
 from .models import Parameter, Product, ProductParameter, Shop, Contact, Category, ProductInfo, Order, OrderItem
 from .serializers import ContactSerializer, OrderSerializer, ShopSerializer, CategorySerializer, \
     ProductInfoSerializer, OrderItemSerializer, UserSerializer
-from .signals import new_order
+from backend.signals import new_order
 
 
+class Home(TemplateView):
+    template_name = 'home.html'
+
+    
 class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
@@ -228,46 +233,13 @@ class PartnerUpdate(APIView):
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
+
 class PartnerStateViewSet(viewsets.ModelViewSet):
     """
     Class for working with supplier status
     """
     queryset = Shop.objects.all()
     serializer_class = ShopSerializer
-
-
-# class PartnerState(APIView):
-#     """
-#     Class for working with supplier status
-#     """
-#     # получить текущий статус
-#     def get(self, request, *args, **kwargs):
-#         if not request.user.is_authenticated:
-#             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
-
-#         if request.user.user_type != 'shop':
-#             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
-
-#         shop = request.user.shop
-#         serializer = ShopSerializer(shop)
-#         return Response(serializer.data)
-
-#     # изменить текущий статус
-#     def post(self, request, *args, **kwargs):
-#         if not request.user.is_authenticated:
-#             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=403)
-
-#         if request.user.user_type != 'shop':
-#             return JsonResponse({'Status': False, 'Error': 'Только для магазинов'}, status=403)
-#         state = request.data.get('state')
-#         if state:
-#             try:
-#                 Shop.objects.filter(user_id=request.user.id).update(state=strtobool(state))
-#                 return JsonResponse({'Status': True})
-#             except ValueError as error:
-#                 return JsonResponse({'Status': False, 'Errors': str(error)})
-
-#         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
 class PartnerOrders(APIView):

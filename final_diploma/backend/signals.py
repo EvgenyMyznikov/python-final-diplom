@@ -1,7 +1,6 @@
-from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver, Signal
 from .models import User
+from .tasks import send_email_task
 
 
 new_order = Signal(
@@ -13,17 +12,8 @@ def new_order_signal(user_id, **kwargs):
     """
     we send a letter when the order status changes
     """
-    # send an e-mail to the user
+    subject = 'Updating the status of your order'
+    message = 'Order has been generated'
     user = User.objects.get(id=user_id)
-
-    msg = EmailMultiAlternatives(
-        # title:
-        f"Обновление статуса заказа",
-        # message:
-        "Заказ сформирован",
-        # from:
-        settings.DEFAULT_FROM_EMAIL,
-        # to:
-        [user.email]
-    )
-    msg.send()
+    email = user.email
+    send_email_task.apply_async((subject, message, email), countdown=60)

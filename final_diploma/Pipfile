@@ -16,6 +16,10 @@ requests = "*"
 pytest = "*"
 pytest-django = "*"
 model-bakery = "*"
+celery = "*"
+flower = "*"
+coreapi = "*"
+django-rest-swagger = "*"
 
 [dev-packages]
 
